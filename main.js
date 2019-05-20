@@ -14,7 +14,8 @@ const volume = {
         rotateLvl       : 0,
         circleLvl       : 0,
         resultHeight    : 0,
-        circleVelocity  : 0
+        circleVelocity  : 0,
+        Xoffset         : 0
     },
     settings : {
         fps                      : 10,
@@ -24,10 +25,12 @@ const volume = {
         firstHeightGrab          : false,
         firstHeight              : 0,
         blockedRightSideCircle   : false,
-        blockedLeftSideCircle    : false
+        blockedLeftSideCircle    : false,
+        dragSide                 : "left"
 
     },
     listiners : () => {
+        app.addEventListener('mousedown', volume.detectSide);
         app.addEventListener('mousemove', volume.detectNumbers);
         app.addEventListener('mousedown', volume.dragPanel);
         app.addEventListener('mouseup', volume.dropPanel);
@@ -51,6 +54,15 @@ const volume = {
             panel.style.transition = "0s";
         } ,500);
     },
+    detectSide : (e) => {
+        let appHalf = app.offsetWidth / 2;
+        if (volume.settings.firstWidth > appHalf) {
+            volume.settings.dragSide = "right";
+        };
+        if (volume.settings.firstWidth < appHalf) {
+            volume.settings.dragSide = "left";
+        };
+    },
     detectNumbers : (e) => {
         // записываем ширину полотна от которой зависит наклон панели и переменная rotateLvl которая и дает ротейт панели
         volume.settings.firstWidth = e.offsetX;
@@ -61,19 +73,30 @@ const volume = {
         if (volume.settings.firstWidth < appHalf) {
             volume.counts.rotateLvl = -e.offsetY;
         };
+        volume.counts.Xoffset = e.offsetX;
     },
-    move : () => {
+    move : (e) => {
         // запись высоты курсора в первый кадр
         if (volume.settings.firstHeightGrab == false) {
             volume.settings.firstHeight = volume.counts.rotateLvl;
             volume.settings.firstHeightGrab = true;
         };
+        
         // вызываем движение кружка
         volume.moveCircle();
         // даем свйоства объектам
         let a = setInterval(() => {
+            // проверяем в какой половине курсор, если перескакивает на противоположную ставим панель на место
+            if (volume.settings.dragSide == "right" && volume.counts.Xoffset < app.offsetWidth / 2 + 10) {
+                clearInterval(a);
+                volume.returnPanel();
+            };
+            if (volume.settings.dragSide == "left" && volume.counts.Xoffset > app.offsetWidth / 2 - 10) {
+                clearInterval(a);
+                volume.returnPanel();
+            };
             if (volume.settings.drag == true) {
-                volume.counts.resultHeight = volume.counts.rotateLvl / 2 - volume.settings.firstHeight / 2;
+                volume.counts.resultHeight = (volume.counts.rotateLvl / 2 - volume.settings.firstHeight / 2) / 1.5;
                 panel.style.transform = "rotate("+ volume.counts.resultHeight +"deg)";
                 volume.renderText();
             };
@@ -110,7 +133,7 @@ const volume = {
         } , 0);
     },
     renderText : () => {
-        text.innerText = "Volume: "+ volume.counts.circleLvl +"";
+        text.innerText = "Volume: "+ Math.floor(volume.counts.circleLvl) +"";
     }
 };
 volume.init();

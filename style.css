@@ -1,6 +1,7 @@
 body {
     margin: 0;
     padding: 0;
+    background-color: #BDBDBD;
 }
 
 * {
@@ -8,17 +9,35 @@ body {
 }
 
 h1 {
-    color: black;
+    color: #424242;
+    pointer-events: none;
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 15%;
+    transform: translateX(-50%);
+}
+
+@keyframes arrows {
+    from {opacity: 0;}
+    15% {opacity: .3;}
+    30% {opacity: 0;}
+    45% {opacity: .3;}
+    60% {opacity: 0;}
+    75% {opacity: .3;}
+    to {opacity: 0;}
 }
 
 .app {
-    border: 1px solid red;
-    width: 300px;
-    height: 300px;
+    border: 1px solid #b3b3b3;
+    width: 400px;
+    background-color: #F2F2F2;
+    height: 400px;
     position: absolute;
     top: 50%;
     left: 50%;
     cursor: grab;
+    transform: translate(-50%,-50%);
 }
 .horizon {
     width: 100%;
@@ -30,7 +49,7 @@ h1 {
 .panel {
     top: 45%;
     pointer-events: none;
-    left: 0%;
+    left: 12%;
     position: absolute;
     width: 300px;
     height: 60px;
@@ -39,6 +58,28 @@ h1 {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, .5);
+}
+
+.app img.left {
+    opacity: 0;
+    position: absolute;
+    animation: arrows  4s ease-in-out;
+    left: -10px;
+    top: 42%;
+    max-width: 70px;
+    pointer-events: none;
+    transform: rotate(-45deg);
+}
+
+.app img.right {
+    opacity: 0;
+    position: absolute;
+    animation: arrows  4s ease-in-out;
+    right: -10px;
+    top: 44%;
+    max-width: 70px;
+    pointer-events: none;
+    transform: rotate(125deg);
 }
 
 .line {
